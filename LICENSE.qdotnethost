@@ -1,0 +1,7 @@
+The files in
+- bridge/include/qdotnet*
+- bridge/tdotnetbridge/tdotnetbridge.Adapter
+are adapted from qtdotnet by Qt, licensed under LGPL3, GPL2 or GPL3.
+
+The source repository for these files can be found below:
+https://code.qt.io/cgit/qt-labs/qtdotnet.git/
