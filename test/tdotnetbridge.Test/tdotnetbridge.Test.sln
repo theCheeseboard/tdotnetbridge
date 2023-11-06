@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.Test", "tdotnetbridge.Test.csproj", "{8A6FB943-CE5D-4BAF-97B5-D13A11B4B5FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A6FB943-CE5D-4BAF-97B5-D13A11B4B5FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A6FB943-CE5D-4BAF-97B5-D13A11B4B5FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A6FB943-CE5D-4BAF-97B5-D13A11B4B5FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A6FB943-CE5D-4BAF-97B5-D13A11B4B5FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

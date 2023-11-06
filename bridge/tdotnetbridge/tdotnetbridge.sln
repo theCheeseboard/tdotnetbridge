@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.Adapter", "tdotnetbridge.Adapter\tdotnetbridge.Adapter.csproj", "{8F8A6006-31B9-4AF7-A998-E5F975E9D13F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.Generator", "tdotnetbridge.Generator\tdotnetbridge.Generator.csproj", "{A194FB96-721C-4C0D-96A3-0923B8065952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.ClientLibrary", "tdotnetbridge.ClientLibrary\tdotnetbridge.ClientLibrary.csproj", "{68C66F92-C47E-4AE5-8B4C-FFC326B17486}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F8A6006-31B9-4AF7-A998-E5F975E9D13F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8A6006-31B9-4AF7-A998-E5F975E9D13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8A6006-31B9-4AF7-A998-E5F975E9D13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8A6006-31B9-4AF7-A998-E5F975E9D13F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A194FB96-721C-4C0D-96A3-0923B8065952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A194FB96-721C-4C0D-96A3-0923B8065952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A194FB96-721C-4C0D-96A3-0923B8065952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A194FB96-721C-4C0D-96A3-0923B8065952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
