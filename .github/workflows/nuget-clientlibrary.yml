@@ -1,0 +1,28 @@
+name: Build and publish NuGet client library
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    name: Pack NuGet package
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core @ Latest
+        uses: actions/setup-dotnet@v3
+
+      - name: Build solution and generate NuGet package
+        run: |
+          cd bridge/tdotnetbridge/tdotnetbridge.ClientLibrary
+          dotnet pack -c Release -o out
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tdotnetbridge.ClientLibrary.nupkg
+          path: bridge/tdotnetbridge/tdotnetbridge.ClientLibrary/*.nupkg
