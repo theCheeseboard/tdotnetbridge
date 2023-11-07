@@ -37,8 +37,7 @@ class QDotNetAdapter final {
         static void init() {
             if (instance().isValid())
                 return;
-            init(QDir(QCoreApplication::applicationDirPath())
-                     .filePath(defaultDllName),
+            init(QDotNetHost::findDotNetLibrary("tdotnetbridge-adapter"),
                 defaultAssemblyName, defaultTypeName);
         }
 
@@ -46,8 +45,7 @@ class QDotNetAdapter final {
         static void init(QDotNetHost* externalHost) {
             if (instance().isValid())
                 return;
-            init(QDir(QCoreApplication::applicationDirPath())
-                     .filePath(defaultDllName),
+            init(QDotNetHost::findDotNetLibrary("tdotnetbridge-adapter"),
                 defaultAssemblyName, defaultTypeName, externalHost);
         }
 
@@ -268,7 +266,7 @@ class QDotNetAdapter final {
         mutable QDotNetFunction<void, qint32*, qint32*, qint32*> fnStats;
         mutable QDotNetFunction<void*, QDotNetRef, QString> fnGetObject;
 
-        static inline const QString defaultDllName = QLatin1String("Qt.DotNet.Adapter.dll");
-        static inline const QString defaultAssemblyName = QLatin1String("Qt.DotNet.Adapter");
+        static inline const QString defaultDllName = QLatin1String("CMakeLists.txt");
+        static inline const QString defaultAssemblyName = QLatin1String("tdotnetbridge.Adapter");
         static inline const QString defaultTypeName = QLatin1String("Qt.DotNet.Adapter");
 };

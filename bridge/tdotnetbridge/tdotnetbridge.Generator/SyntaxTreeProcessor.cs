@@ -16,22 +16,18 @@ public class SyntaxTreeProcessor
         _semanticModel = semanticModel;
     }
 
-    public async Task Process()
+    public async Task<IEnumerable<ExportedClass>> Process()
     {
         var root = await _tree.GetRootAsync();
         var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
-    
-        foreach (var @class in classes)
-        {
-            ProcessClass(@class);
-        }
+        return classes.Select(ProcessClass).Where(x => x is not null)!;
     }
 
-    private void ProcessClass(MemberDeclarationSyntax @class)
+    private ExportedClass? ProcessClass(MemberDeclarationSyntax @class)
     {
         if (!HasQObjectAttribute(@class))
         {
-            return;
+            return null;
         }
 
         // Find all constructor declarations
@@ -41,22 +37,21 @@ public class SyntaxTreeProcessor
         foreach (var methodOrConstructor in methodAndConstructorDeclarations)
         {
             var attributesConstructorOrMethod = methodOrConstructor.AttributeLists.SelectMany(a => a.Attributes).ToList();
-            foreach (var attrC in attributesConstructorOrMethod)
+            if (!attributesConstructorOrMethod.Select(attrC => _semanticModel.GetSymbolInfo(attrC)).Any(
+                    attrCSymbolInfo => attrCSymbolInfo.Symbol != null &&
+                                       attrCSymbolInfo.Symbol.ToString() == TargetAttributeConstructor))
             {
-                var attrCSymbolInfo = _semanticModel.GetSymbolInfo(attrC);
-                if (attrCSymbolInfo.Symbol != null && attrCSymbolInfo.Symbol.ToString() == TargetAttributeConstructor)
-                {
-                    if (methodOrConstructor is ConstructorDeclarationSyntax constructor)
-                    {
-                        constructors.Add(constructor);
-                    }
+                continue;
+            }
 
-                    if (methodOrConstructor is MethodDeclarationSyntax method)
-                    {
-                        methods.Add(method);
-                    }
+            switch (methodOrConstructor)
+            {
+                case ConstructorDeclarationSyntax constructor:
+                    constructors.Add(constructor);
                     break;
-                }
+                case MethodDeclarationSyntax method:
+                    methods.Add(method);
+                    break;
             }
         }
 
@@ -71,7 +66,7 @@ public class SyntaxTreeProcessor
             Methods = methods
         };
 
-        Console.WriteLine(exported.OutputCode(_semanticModel));
+        return exported;
     }
 
     private bool HasQObjectAttribute(MemberDeclarationSyntax @class)

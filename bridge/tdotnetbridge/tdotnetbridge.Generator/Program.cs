@@ -13,14 +13,31 @@ static async Task OptionsParsedSuccessfully(Options options)
     
     var workspace = MSBuildWorkspace.Create();
     var project = await workspace.OpenProjectAsync(options.InputProject);
+
+    if (options.Output != "-")
+    {
+        Directory.CreateDirectory(options.Output);
+    }
     
-    var syntaxTrees = new List<SyntaxTree>();
     foreach (var document in project.Documents)
     {
         var syntaxTree = await document.GetSyntaxTreeAsync();
         var semanticModel = await document.GetSemanticModelAsync();
+        if (syntaxTree is null || semanticModel is null) continue;
         var syntaxTreeProcessor = new SyntaxTreeProcessor(syntaxTree, semanticModel);
-        await syntaxTreeProcessor.Process();
+        foreach (var exportedClass in await syntaxTreeProcessor.Process())
+        {
+            if (options.Output == "-")
+            {
+                Console.WriteLine(exportedClass.HeaderName);
+                Console.WriteLine(exportedClass.OutputCode(semanticModel));
+                return;
+            }
+
+            var outputFile = Path.Combine(options.Output, exportedClass.HeaderName);
+            await File.WriteAllTextAsync(outputFile, exportedClass.OutputCode(semanticModel));
+            Console.WriteLine(exportedClass.HeaderName);
+        }
     }
 }
 

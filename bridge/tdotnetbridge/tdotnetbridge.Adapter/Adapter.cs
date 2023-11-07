@@ -34,8 +34,7 @@ namespace Qt.DotNet
 
             if (File.Exists(Path.GetFullPath(assemblyName))) {
                 try {
-                    var a = Assembly.LoadFile(Path.GetFullPath(assemblyName));
-                    Console.WriteLine(a.FullName);
+                    var a = Assembly.LoadFrom(Path.GetFullPath(assemblyName));
                     return true;
                 } catch (Exception) {
                 }

@@ -9,6 +9,7 @@ public class ExportedClass
     public required string Name { get; set; }
     public required IEnumerable<ConstructorDeclarationSyntax> Constructors { get; set; }
     public required IEnumerable<MethodDeclarationSyntax> Methods { get; set; }
+    public string HeaderName => $"{Name.ToLower()}.h";
 
     private string IncludeGuard =>
         $"DOTNET_MANAGED_GENERATED_CLASS_{$"{Namespace}.{Name}".ToUpper().Replace(".", "_")}";
@@ -23,7 +24,7 @@ public class ExportedClass
                #ifndef {{IncludeGuard}}
                #define {{IncludeGuard}}
                
-               #include <include/qdotnetobject.h>
+               #include <qdotnetobject.h>
                
                class {{Name}} : public QDotNetObject {
                    public:

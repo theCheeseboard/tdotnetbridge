@@ -133,6 +133,29 @@ class QDotNetHost {
             fnSetErrorWriter(errorWriter);
         }
 
+        static QString findDotNetLibrary(QString library) {
+            QStringList libraryPaths;
+#ifdef Q_OS_LINUX
+            libraryPaths = qEnvironmentVariable("LD_LIBRARY_PATH").split(":");
+            libraryPaths.append("/usr/lib");
+#endif
+            for (auto path : libraryPaths) {
+                QDir expectedDir(QDir(path).absoluteFilePath(QStringLiteral("tdotnetbridge/%1").arg(library)));
+                if (!expectedDir.exists()) continue;
+
+                auto depsFile = expectedDir.entryList({"*.deps.json"});
+                for (auto file : depsFile) {
+                    auto fileParts = file.split(".");
+                    fileParts.removeLast();
+                    fileParts.removeLast();
+                    auto dll = expectedDir.absoluteFilePath(QStringLiteral("%1.dll").arg(fileParts.join(".")));
+                    if (QFile::exists(dll)) return dll;
+                }
+            }
+
+            return {};
+        }
+
     private:
         void* resolveFunction(const QString& assemblyPath, const QString& typeName,
             const QString& methodName, const QString& delegateType) const {

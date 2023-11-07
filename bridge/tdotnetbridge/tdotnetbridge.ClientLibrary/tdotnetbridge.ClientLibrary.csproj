@@ -7,6 +7,12 @@
         <Authors>Victor Tran</Authors>
         <Company>theCheeseboard</Company>
         <Version>1.0.0</Version>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
 
 </Project>

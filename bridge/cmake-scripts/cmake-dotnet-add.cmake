@@ -2,7 +2,7 @@ include_guard()
 include(GNUInstallDirs)
 
 function(tdotnet_dotnet_path path)
-    if(NOT DEFINED DOTNET_EXECUTABLE_PATH)
+    if(DEFINED DOTNET_EXECUTABLE_PATH)
         set(${path} ${DOTNET_EXECUTABLE_PATH} PARENT_SCOPE)
         return()
     endif()
@@ -15,6 +15,23 @@ function(tdotnet_dotnet_path path)
         message(STATUS "dotnet executable found at ${DOTNET_FOUND}")
         set(DOTNET_EXECUTABLE_PATH ${DOTNET_FOUND} CACHE STRING "Path to the dotnet executable")
         set(${path} ${DOTNET_EXECUTABLE_PATH} PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(tdotnet_generator_path path)
+    if(DEFINED TDOTNETBRIDGE_GENERATOR_PATH)
+        set(${path} ${TDOTNETBRIDGE_GENERATOR_PATH} PARENT_SCOPE)
+        return()
+    endif()
+
+    find_program(TDOTNETBRIDGE_GENERATOR_FOUND tdotnetbridge-generator)
+
+    if(NOT TDOTNETBRIDGE_GENERATOR_FOUND)
+        message(FATAL_ERROR "Could not find tdotnetbridge-generator")
+    else()
+        message(STATUS "tdotnetbridge-generator executable found at ${TDOTNETBRIDGE_GENERATOR_FOUND}")
+        set(TDOTNETBRIDGE_GENERATOR_PATH ${TDOTNETBRIDGE_GENERATOR_FOUND} CACHE STRING "Path to the tdotnetbridge-generator executable")
+        set(${path} ${TDOTNETBRIDGE_GENERATOR_PATH} PARENT_SCOPE)
     endif()
 endfunction()
 
@@ -43,15 +60,27 @@ function(tdotnet_add_dotnet_project name)
         COMMENT "Building MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
     )
 
-    if(NOT NO_INSTALL)
+    if(NOT ADD_DOTNET_PROJECT_NO_INSTALL)
         install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tdotnet/${name}
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/tdotnetbridge
             USE_SOURCE_PERMISSIONS
         )
     endif()
 
-    add_custom_target(${name})
+    add_library(${name} INTERFACE)
     add_dependencies(${name} ${name}_dotnet_build)
     add_dependencies(${name}_dotnet_build ${name}_dotnet_restore)
     add_dependencies(restore ${name}_dotnet_restore)
+
+    if(NOT ADD_DOTNET_PROJECT_NO_GENERATE)
+        tdotnet_generator_path(GENERATOR_PATH)
+
+        add_custom_target(
+            ${name}_dotnet_generate ALL
+            COMMAND ${GENERATOR_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include/${name}
+            COMMENT "Generating CXX glue for MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
+        )
+        target_include_directories(${name} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include)
+        add_dependencies(${name} ${name}_dotnet_generate)
+    endif()
 endfunction()
