@@ -30,7 +30,7 @@ public class SyntaxTreeProcessor
             return null;
         }
 
-        // Find all constructor declarations
+        // Find all constructor and method declarations
         var constructors = new List<ConstructorDeclarationSyntax>();
         var methods = new List<MethodDeclarationSyntax>();
         var methodAndConstructorDeclarations = @class.DescendantNodes().OfType<BaseMethodDeclarationSyntax>();
@@ -55,6 +55,20 @@ public class SyntaxTreeProcessor
             }
         }
 
+        var properties = new List<PropertyDeclarationSyntax>();
+        var propertyDeclarations = @class.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+        foreach (var property in propertyDeclarations)
+        {
+            var attributesProperty = property.AttributeLists.SelectMany(a => a.Attributes).ToList();
+            if (!attributesProperty.Select(attrP => _semanticModel.GetSymbolInfo(attrP)).Any(
+                    attrPSymbolInfo => attrPSymbolInfo.Symbol is not null &&
+                                       attrPSymbolInfo.Symbol.ToString() == TargetAttributeConstructor))
+            {
+                continue;
+            }
+
+            properties.Add(property);
+        }
 
         var classSymbol = _semanticModel.GetDeclaredSymbol(@class)!;
 
@@ -63,7 +77,8 @@ public class SyntaxTreeProcessor
             Namespace = classSymbol.ContainingNamespace.ToString()!,
             Name = classSymbol.Name,
             Constructors = constructors,
-            Methods = methods
+            Methods = methods,
+            Properties = properties
         };
 
         return exported;

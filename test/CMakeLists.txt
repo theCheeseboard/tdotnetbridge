@@ -7,7 +7,7 @@ set(SOURCES
     )
 
 set(HEADERS
-
+        testobjectclass.h
     )
 
 # Find Apple lproj files
@@ -27,6 +27,7 @@ set(SOURCES ${SOURCES} ${LPROJ_SOURCES})
 add_executable(tdotnetbridge-test ${SOURCES} ${HEADERS})
 
 set_target_properties(tdotnetbridge-test PROPERTIES
+    AUTOMOC TRUE
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
         MACOSX_BUNDLE_GUI_IDENTIFIER com.vicr123.tdotnetbridge-test

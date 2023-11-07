@@ -9,6 +9,7 @@ public class ExportedClass
     public required string Name { get; set; }
     public required IEnumerable<ConstructorDeclarationSyntax> Constructors { get; set; }
     public required IEnumerable<MethodDeclarationSyntax> Methods { get; set; }
+    public required IEnumerable<PropertyDeclarationSyntax> Properties { get; set; }
     public string HeaderName => $"{Name.ToLower()}.h";
 
     private string IncludeGuard =>
@@ -24,9 +25,15 @@ public class ExportedClass
                #ifndef {{IncludeGuard}}
                #define {{IncludeGuard}}
                
+               #include <QObject>
                #include <qdotnetobject.h>
                
-               class {{Name}} : public QDotNetObject {
+               class {{Name}} : public QObject, public QDotNetObject, public QDotNetObject::IEventHandler {
+                   Q_OBJECT
+               {{
+                   string.Join('\n', Properties.Select(syntax => GenerateProperty(syntax, semanticModel)))
+               }}
+                   
                    public:
                        Q_DOTNET_OBJECT_INLINE({{Name}}, "{{Namespace}}.{{Name}}");
                        
@@ -37,15 +44,132 @@ public class ExportedClass
                {{
                    string.Join('\n', Methods.Select(syntax => GenerateMethod(syntax, semanticModel)))
                }}
+               
+               {{
+                   string.Join('\n', Properties.Select(syntax => GeneratePropertyAccessors(syntax, semanticModel)))
+               }}
                        
                    private:
                {{
                    string.Join('\n', Methods.Select(syntax => GenerateMethodPrivateMember(syntax, semanticModel)))
                }}
+               {{
+                   string.Join('\n', Properties.Select(syntax => GeneratePropertyPrivateMember(syntax, semanticModel)))
+               }}
                };
                
                #endif // {{IncludeGuard}}
                """;
+    }
+
+    private string GeneratePropertyPrivateMember(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+    {
+        PropertyFlags(property, out var haveGetter, out var haveSetter);
+
+        var name = property.Identifier.ToString();
+        
+        var typeContext = new TypeContext(semanticModel);
+        var type = typeContext.ToCppType(property.Type);
+        
+        var accessors = new List<string>();
+
+        if (haveGetter)
+        {
+            accessors.Add($$"""
+                                    QDotNetFunction<{{type}}> _fn_property_getter_{{name}};
+                            """);
+        }
+
+        if (haveSetter)
+        {
+            accessors.Add($$"""
+                                    QDotNetFunction<void, {{type}}> _fn_property_setter_{{name}};
+                            """);
+        }
+        
+        return string.Join('\n', accessors);
+    }
+
+    private string GeneratePropertyAccessors(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+    {
+        PropertyFlags(property, out var haveGetter, out var haveSetter);
+
+        var name = property.Identifier.ToString();
+        
+        var typeContext = new TypeContext(semanticModel);
+        var type = typeContext.ToCppType(property.Type);
+        
+        var accessors = new List<string>();
+
+        if (haveGetter)
+        {
+            accessors.Add($$"""
+                    {{type}} {{Utilities.ToCamelCase(name)}}() {
+                        return method("get_{{name}}", _fn_property_getter_{{name}}).invoke(*this);                    
+                    }
+            """);
+        }
+
+        if (haveSetter)
+        {
+            accessors.Add($$"""
+                    void {{Utilities.ToCamelCase($"Set{name}")}}(const {{type}}& {{Utilities.ToCamelCase(name)}}) {
+                        return method("set_{{name}}", _fn_property_setter_{{name}}).invoke(*this, {{Utilities.ToCamelCase(name)}});                    
+                    }
+            """);
+        }
+        
+        return string.Join('\n', accessors);
+    }
+
+    private string GenerateProperty(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+    {
+        PropertyFlags(property, out var haveGetter, out var haveSetter);
+
+        var name = property.Identifier.ToString();
+        
+        var typeContext = new TypeContext(semanticModel);
+        var type = typeContext.ToCppType(property.Type);
+
+        var parts = new List<string>()
+        {
+            type,
+            Utilities.ToCamelCase(name)
+        };
+
+        if (haveGetter)
+        {
+            parts.Add("READ");
+            parts.Add(Utilities.ToCamelCase(name));
+        }
+
+        if (haveSetter)
+        {
+            parts.Add("WRITE");
+            parts.Add(Utilities.ToCamelCase($"Set{name}"));
+        }
+        
+        return $$"""
+            Q_PROPERTY({{string.Join(' ', parts)}})
+        """;
+    }
+
+    private static void PropertyFlags(PropertyDeclarationSyntax property, out bool haveGetter, out bool haveSetter)
+    {
+        haveGetter = false;
+        haveSetter = false;
+        if (property.ExpressionBody is not null)
+        {
+            // This is a computed property
+            haveGetter = true;
+            haveSetter = false;
+        }
+        else if (property.AccessorList is not null)
+        {
+            var accessors = property.AccessorList.Accessors;
+            haveGetter = accessors.Any(a => a.Keyword.Text == "get");
+            haveSetter = accessors.Any(a => a.Keyword.Text == "set");
+        }
     }
 
     private string GenerateConstructor(ConstructorDeclarationSyntax constructor, SemanticModel semanticModel)
