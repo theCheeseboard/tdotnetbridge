@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tdotnetbridge.ClientLibrary.nupkg
-          path: bridge/tdotnetbridge/tdotnetbridge.ClientLibrary/*.nupkg
+          path: bridge/tdotnetbridge/tdotnetbridge.ClientLibrary/out/*.nupkg
