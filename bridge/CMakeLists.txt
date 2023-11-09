@@ -1,6 +1,6 @@
 project(lib VERSION 1.0.0 LANGUAGES CXX)
 
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED Core)
 include(CMakePackageConfigHelpers)
 
 file(GLOB EXTRA_FUNCTIONS "${CMAKE_CURRENT_LIST_DIR}/cmake-scripts/*.cmake")
@@ -40,7 +40,7 @@ set_target_properties(tdotnetbridge PROPERTIES
         VERSION 1.0.0
         PUBLIC_HEADER "${HEADERS}")
 
-target_link_libraries(tdotnetbridge Qt::Widgets Qt::DBus Qt::Multimedia)
+target_link_libraries(tdotnetbridge Qt::Core)
 target_compile_definitions(tdotnetbridge PRIVATE TDOTNETBRIDGE_LIBRARY)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
