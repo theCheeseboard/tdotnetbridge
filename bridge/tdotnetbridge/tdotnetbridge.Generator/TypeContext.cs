@@ -11,25 +11,34 @@ public class TypeContext
     {
         _semanticModel = semanticModel;
     }
-    
+
     public string ToCppType(TypeSyntax type)
     {
-        if (type is PredefinedTypeSyntax predefinedType)
+        return ToCppType((ITypeSymbol)_semanticModel.GetSymbolInfo(type).Symbol!);
+    }
+
+    private static string ToCppType(ITypeSymbol typeSymbol)
+    {
+        if (typeSymbol is INamedTypeSymbol { TypeArguments.Length: > 0 } namedTypeSymbol)
         {
-            return predefinedType.Keyword.Text switch
+            var containerType = $"{namedTypeSymbol.ContainingNamespace}.{namedTypeSymbol.Name}" switch
             {
-                "void" => "void",
-                "string" => "QString",
-                _ => predefinedType.Keyword.Text
+                "System.Threading.Tasks.Task" => "QDotNetTask",
+                _ => namedTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
             };
+            return $"{containerType}<{string.Join(", ", namedTypeSymbol.TypeArguments.Select(ToCppType))}>";
         }
-        
-        var typeSymbol = _semanticModel.GetSymbolInfo(type).Symbol!;
-        
-        return (typeSymbol.ToString() switch
+
+        return typeSymbol.SpecialType switch
         {
-            "String" => "QString",
-            _ => typeSymbol.ToString()
-        })!;
+            SpecialType.System_Void => "void",
+            SpecialType.System_String => "QString",
+            _ => (typeSymbol.ToString() switch
+            {
+                "String" => "QString",
+                "System.Threading.Tasks.Task" => "QDotNetTask<void>",
+                _ => typeSymbol.ToString()
+            })!
+        };
     }
 }

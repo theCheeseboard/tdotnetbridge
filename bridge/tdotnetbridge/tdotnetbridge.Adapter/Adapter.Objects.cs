@@ -10,12 +10,23 @@ namespace tdotnetbridge.Adapter;
 
 public partial class Adapter
 {
-    internal static IntPtr GetRefPtrToObject(object obj, bool weakRef = false)
+    internal static IntPtr GetRefPtrToTrueObject(object obj, bool weakRef = false)
     {
+        
         var objHandle = GCHandle.Alloc(obj, weakRef ? GCHandleType.Weak : GCHandleType.Normal);
         var objRefPtr = GCHandle.ToIntPtr(objHandle);
         ObjectRefs.TryAdd(objRefPtr, new ObjectRef(objHandle));
         return objRefPtr;
+    }
+    
+    internal static IntPtr GetRefPtrToObject(object obj, bool weakRef = false)
+    {
+        // if (obj is Task t)
+        // {
+        //     return GetRefPtrToTrueObject(new TaskShim(t));
+        // }
+
+        return GetRefPtrToTrueObject(obj);
     }
 
     internal static ObjectRef GetObjectRefFromPtr(IntPtr objRefPtr)
@@ -26,6 +37,10 @@ public partial class Adapter
             return null;
         if (!objRef.IsValid)
             throw new ObjectDisposedException(nameof(objRefPtr));
+        // if (objRef.Target is TaskShim ts)
+        // {
+        //     return GetObjectRefFromPtr(GetRefPtrToTrueObject(ts.UnderlyingTask, true));
+        // }
         return objRef;
     }
 

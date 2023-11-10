@@ -1,6 +1,7 @@
 project(tdotnetbridge-test VERSION 1.0.0 LANGUAGES CXX)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus Sql PrintSupport)
+find_package(QCoro${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 set(SOURCES
         main.cpp
@@ -28,6 +29,7 @@ add_executable(tdotnetbridge-test ${SOURCES} ${HEADERS})
 
 set_target_properties(tdotnetbridge-test PROPERTIES
     AUTOMOC TRUE
+    CXX_STANDARD 20
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
         MACOSX_BUNDLE_GUI_IDENTIFIER com.vicr123.tdotnetbridge-test
@@ -36,7 +38,7 @@ set_target_properties(tdotnetbridge-test PROPERTIES
         TRANSLATION_SOURCES "${SOURCES};${HEADERS}"
     )
 
-target_link_libraries(tdotnetbridge-test tdotnetbridge)
+target_link_libraries(tdotnetbridge-test tdotnetbridge QCoro::Core)
 target_include_directories(tdotnetbridge-test PUBLIC ../bridge/)
 
 install(TARGETS tdotnetbridge-test

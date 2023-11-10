@@ -27,8 +27,9 @@ public class ExportedClass
                
                #include <QObject>
                #include <qdotnetobject.h>
+               #include <qdotnettask.h>
                
-               class {{Name}} : public QObject, public QDotNetObject, public QDotNetObject::IEventHandler {
+               class {{Name}} : public QObject, public QDotNetObject {
                    Q_OBJECT
                {{
                    string.Join('\n', Properties.Select(syntax => GenerateProperty(syntax, semanticModel)))

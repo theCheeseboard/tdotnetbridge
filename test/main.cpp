@@ -1,8 +1,23 @@
 #include <QCoreApplication>
 
 #include "testobjectclass.h"
+#include <QCoroCore>
+#include <QString>
 #include <QTextStream>
+#include <functional>
 #include <include/qdotnetevent.h>
+
+QCoro::Task<> runTask() {
+    TestObjectClass testDotNetClass;
+    QTextStream(stderr) << "Starting task\n";
+    auto result = co_await testDotNetClass.doSomethingAfterTwoSeconds();
+    QTextStream(stderr) << result << "\n";
+    auto task = testDotNetClass.doSomethingAfterTwoSeconds();
+    QTextStream(stderr) << co_await task << "\n";
+    co_await testDotNetClass.justWait();
+    QTextStream(stderr) << "Waited\n";
+    co_return;
+}
 
 int main(int argc, char** argv) {
     QCoreApplication a(argc, argv);
@@ -19,7 +34,6 @@ int main(int argc, char** argv) {
     dotnetHost.resolveFunction(helloWorldFunction, "/home/victor/RiderProjects/ClassLibrary2/ClassLibrary2/bin/Debug/net7.0/ClassLibrary2.dll", "ClassLibrary2.Class1, ClassLibrary2", "HelloWorld", "ClassLibrary2.Class1+HelloWorldDelegate, ClassLibrary2");
     helloWorldFunction();
 
-    QDotNetAdapter::init("/home/victor/Documents/Apps/tdotnetbridge/bridge/tdotnetbridge/tdotnetbridge.Adapter/bin/Debug/net7.0/tdotnetbridge.Adapter.dll", "tdotnetbridge.Adapter", "Qt.DotNet.Adapter");
     QDotNetAdapter::instance().loadAssembly("/home/victor/RiderProjects/ClassLibrary2/ClassLibrary2/bin/Debug/net7.0/ClassLibrary2.dll");
 
     TestObjectClass testDotNetClass;
@@ -33,6 +47,8 @@ int main(int argc, char** argv) {
     testDotNetClassWithPrefix.setCustomProperty("Custom Property Here");
     testDotNetClassWithPrefix.writeMessage(testDotNetClassWithPrefix.customProperty());
     testDotNetClassWithPrefix.setSetOnlyProperty("Set Only");
+
+    runTask();
 
     return a.exec();
 }

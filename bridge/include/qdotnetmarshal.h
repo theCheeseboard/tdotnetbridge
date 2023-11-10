@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "qdotnetfunction.h"
 #include "qdotnetparameter.h"
 
 #ifdef __GNUC__

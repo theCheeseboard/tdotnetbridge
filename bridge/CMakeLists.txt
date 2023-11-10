@@ -28,6 +28,7 @@ set(HEADERS
         include/qdotnetref.h
         include/qdotnetsafemethod.h
         include/qdotnettype.h
+        include/qdotnettask.h
     )
 
 add_library(tdotnetbridge SHARED ${SOURCES} ${HEADERS}
@@ -57,6 +58,7 @@ ENDIF()
 
 tdotnet_add_dotnet_project(tdotnetbridge-adapter NO_GENERATE
     PROJECT tdotnetbridge/tdotnetbridge.Adapter/tdotnetbridge.Adapter.csproj)
+
 tdotnet_add_dotnet_project(tdotnetbridge-generator NO_GENERATE
     PROJECT tdotnetbridge/tdotnetbridge.Generator/tdotnetbridge.Generator.csproj)
 
