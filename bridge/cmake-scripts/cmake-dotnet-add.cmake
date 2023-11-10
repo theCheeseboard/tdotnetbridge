@@ -75,12 +75,38 @@ function(tdotnet_add_dotnet_project name)
     if(NOT ADD_DOTNET_PROJECT_NO_GENERATE)
         tdotnet_generator_path(GENERATOR_PATH)
 
-        add_custom_target(
-            ${name}_dotnet_generate ALL
+        # Find out what files need to be added to the target
+        message(STATUS "Discovering generated files for MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}...")
+        execute_process(
+            COMMAND ${GENERATOR_PATH} -n ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include/${name}
+            OUTPUT_VARIABLE GENERATOR_DRY_RUN_OUTPUT
+        )
+
+        # Replace newline with semicolon
+        string(REPLACE "\n" ";" GENERATOR_DRY_RUN_OUTPUT_LIST "${GENERATOR_DRY_RUN_OUTPUT}")
+
+        set(GENERATOR_OUTPUT_FILES "")
+        foreach(item ${GENERATOR_DRY_RUN_OUTPUT_LIST})
+            list(APPEND GENERATOR_OUTPUT_FILES "${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include/${name}/${item}")
+        endforeach()
+
+        message(TRACE "${GENERATOR_OUTPUT_FILES}")
+
+        add_custom_command(
+#            ${name}_dotnet_generate ALL
+            OUTPUT ${GENERATOR_OUTPUT_FILES}
             COMMAND ${GENERATOR_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include/${name}
             COMMENT "Generating CXX glue for MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
         )
+        add_library(${name}_dotnet_generate STATIC ${GENERATOR_OUTPUT_FILES})
+        set_target_properties(${name}_dotnet_generate PROPERTIES
+            LINKER_LANGUAGE CXX
+            CXX_STANDARD 20
+            AUTOMOC ON
+        )
+        target_link_libraries(${name}_dotnet_generate PUBLIC Qt::Core tdotnetbridge)
         target_include_directories(${name} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include)
         add_dependencies(${name} ${name}_dotnet_generate)
+        target_link_libraries(${name} INTERFACE ${name}_dotnet_generate)
     endif()
 endfunction()

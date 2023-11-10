@@ -12,4 +12,7 @@ public class Options
 
     [Option('f', "framework", Default = "net7.0", HelpText = "Target Framework")]
     public string Framework { get; set; } = string.Empty;
+
+    [Option('n', "dry-run")]
+    public bool DryRun { get; set; } = false;
 }

@@ -2,8 +2,6 @@
 
 using CommandLine;
 using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using tdotnetbridge.Generator;
 
@@ -26,6 +24,16 @@ static async Task OptionsParsedSuccessfully(Options options)
     var preprocessed =
         (await Task.WhenAll(syntaxTreeProcessors.Select(async processor => await processor.PreProcess())))
         .SelectMany(x => x).ToList();
+
+    if (options.DryRun)
+    {
+        foreach (var preExportedClass in preprocessed)
+        {
+            Console.WriteLine(preExportedClass.HeaderName);
+        }
+
+        return;
+    }
 
     foreach (var syntaxTreeProcessor in syntaxTreeProcessors)
     {
