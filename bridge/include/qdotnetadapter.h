@@ -268,5 +268,5 @@ class QDotNetAdapter final {
 
         static inline const QString defaultDllName = QLatin1String("CMakeLists.txt");
         static inline const QString defaultAssemblyName = QLatin1String("tdotnetbridge.Adapter");
-        static inline const QString defaultTypeName = QLatin1String("Qt.DotNet.Adapter");
+        static inline const QString defaultTypeName = QLatin1String("tdotnetbridge.Adapter.Adapter");
 };
