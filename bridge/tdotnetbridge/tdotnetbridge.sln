@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.Generator", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.ClientLibrary", "tdotnetbridge.ClientLibrary\tdotnetbridge.ClientLibrary.csproj", "{68C66F92-C47E-4AE5-8B4C-FFC326B17486}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdotnetbridge.Generator.Tests", "tdotnetbridge.Generator.Tests\tdotnetbridge.Generator.Tests.csproj", "{F136F298-0EC5-4C08-BF57-90C7184072BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68C66F92-C47E-4AE5-8B4C-FFC326B17486}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F136F298-0EC5-4C08-BF57-90C7184072BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F136F298-0EC5-4C08-BF57-90C7184072BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F136F298-0EC5-4C08-BF57-90C7184072BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F136F298-0EC5-4C08-BF57-90C7184072BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

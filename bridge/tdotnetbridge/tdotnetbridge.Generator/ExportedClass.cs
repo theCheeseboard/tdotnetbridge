@@ -28,6 +28,7 @@ public class ExportedClass
                #include <QObject>
                #include <qdotnetobject.h>
                #include <qdotnettask.h>
+               #include <qdotnetarray.h>
                
                class {{Name}} : public QObject, public QDotNetObject {
                    Q_OBJECT

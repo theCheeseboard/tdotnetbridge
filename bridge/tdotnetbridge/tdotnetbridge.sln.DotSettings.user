@@ -2,4 +2,9 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/home/victor/Documents/test-roslyn.dll" /&gt;
   &lt;Assembly Path="/home/victor/.nuget/packages/commandlineparser/2.9.1/lib/netstandard2.0/CommandLine.dll" /&gt;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8824c55d_002D6218_002D464a_002D80bc_002D689c2f29dcf7/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestTypeContext" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::F136F298-0EC5-4C08-BF57-90C7184072BB::net7.0::tdotnetbridge.Generator.Tests.TestTypeContext&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

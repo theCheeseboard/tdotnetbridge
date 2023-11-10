@@ -19,26 +19,39 @@ public class TypeContext
 
     private static string ToCppType(ITypeSymbol typeSymbol)
     {
-        if (typeSymbol is INamedTypeSymbol { TypeArguments.Length: > 0 } namedTypeSymbol)
+        switch (typeSymbol)
         {
-            var containerType = $"{namedTypeSymbol.ContainingNamespace}.{namedTypeSymbol.Name}" switch
+            case IArrayTypeSymbol arrayTypeSymbol:
+                return $"QDotNetArray<{ToCppType(arrayTypeSymbol.ElementType)}>";
+            case INamedTypeSymbol { TypeArguments.Length: > 0 } namedTypeSymbol:
             {
-                "System.Threading.Tasks.Task" => "QDotNetTask",
-                _ => namedTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
-            };
-            return $"{containerType}<{string.Join(", ", namedTypeSymbol.TypeArguments.Select(ToCppType))}>";
+                var containerType = $"{namedTypeSymbol.ContainingNamespace}.{namedTypeSymbol.Name}" switch
+                {
+                    "System.Threading.Tasks.Task" => "QDotNetTask",
+                    _ => namedTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                };
+                return $"{containerType}<{string.Join(", ", namedTypeSymbol.TypeArguments.Select(ToCppType))}>";
+            }
+            default:
+                return typeSymbol.SpecialType switch
+                {
+                    SpecialType.System_Void => "void",
+                    SpecialType.System_Boolean => "bool",
+                    SpecialType.System_String => "QString",
+                    SpecialType.System_Byte => "quint8",
+                    SpecialType.System_Int16 => "qint16",
+                    SpecialType.System_UInt16 => "quint16",
+                    SpecialType.System_Int32 => "qint32",
+                    SpecialType.System_UInt32 => "quint32",
+                    SpecialType.System_Int64 => "qint64",
+                    SpecialType.System_UInt64 => "quint64",
+                    _ => (typeSymbol.ToString() switch
+                    {
+                        "String" => "QString",
+                        "System.Threading.Tasks.Task" => "QDotNetTask<void>",
+                        _ => typeSymbol.ToString()
+                    })!
+                };
         }
-
-        return typeSymbol.SpecialType switch
-        {
-            SpecialType.System_Void => "void",
-            SpecialType.System_String => "QString",
-            _ => (typeSymbol.ToString() switch
-            {
-                "String" => "QString",
-                "System.Threading.Tasks.Task" => "QDotNetTask<void>",
-                _ => typeSymbol.ToString()
-            })!
-        };
     }
 }

@@ -1,10 +1,10 @@
 #ifndef QDOTNETTASK_H
 #define QDOTNETTASK_H
 
+#include "qdotnetobject.h"
 #include <QTimer>
-#include <coroutine.h>
+#include <coroutine>
 #include <functional>
-#include <include/qdotnetobject.h>
 
 template<typename T> class QDotNetTask : public QDotNetObject {
     public:
