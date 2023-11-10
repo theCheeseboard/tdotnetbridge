@@ -18,27 +18,38 @@ static async Task OptionsParsedSuccessfully(Options options)
     {
         Directory.CreateDirectory(options.Output);
     }
-    
-    foreach (var document in project.Documents)
+
+    var trees = await Task.WhenAll(project.Documents.Select(async document => (await document.GetSyntaxTreeAsync(), await document.GetSemanticModelAsync())));
+    var syntaxTreeProcessors = trees.Where(x => x.Item1 is not null && x.Item2 is not null)
+        .Select(x => new SyntaxTreeProcessor(x.Item1!, x.Item2!)).ToList();
+
+    var preprocessed =
+        (await Task.WhenAll(syntaxTreeProcessors.Select(async processor => await processor.PreProcess())))
+        .SelectMany(x => x).ToList();
+
+    foreach (var syntaxTreeProcessor in syntaxTreeProcessors)
     {
-        var syntaxTree = await document.GetSyntaxTreeAsync();
-        var semanticModel = await document.GetSemanticModelAsync();
-        if (syntaxTree is null || semanticModel is null) continue;
-        var syntaxTreeProcessor = new SyntaxTreeProcessor(syntaxTree, semanticModel);
+        var semanticPackage = new SemanticPackage
+        {
+            SemanticModel = syntaxTreeProcessor.SemanticModel,
+            PreExportedClasses = preprocessed
+        };
+        
         foreach (var exportedClass in await syntaxTreeProcessor.Process())
         {
             if (options.Output == "-")
             {
                 Console.WriteLine(exportedClass.HeaderName);
-                Console.WriteLine(exportedClass.OutputCode(semanticModel));
+                Console.WriteLine(exportedClass.OutputCode(semanticPackage));
                 return;
             }
 
             var outputFile = Path.Combine(options.Output, exportedClass.HeaderName);
-            await File.WriteAllTextAsync(outputFile, exportedClass.OutputCode(semanticModel));
+            await File.WriteAllTextAsync(outputFile, exportedClass.OutputCode(semanticPackage));
             Console.WriteLine(exportedClass.HeaderName);
         }
     }
+    
 }
 
 var result = Parser.Default.ParseArguments<Options>(args);

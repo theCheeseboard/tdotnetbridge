@@ -37,7 +37,11 @@ public class TestTypeContext
         var root = await syntaxTree.GetRootAsync();
         var field = root.DescendantNodes().OfType<FieldDeclarationSyntax>().Single();
 
-        var typeContext = new TypeContext(compilation.GetSemanticModel(syntaxTree));
+        var typeContext = new TypeContext(new SemanticPackage()
+        {
+            PreExportedClasses = new(),
+            SemanticModel = compilation.GetSemanticModel(syntaxTree)
+        }, new());
         var type = typeContext.ToCppType(field.Declaration.Type);
         Assert.Equal(expectedType, type);
     }

@@ -5,20 +5,33 @@ namespace tdotnetbridge.Generator;
 
 public class TypeContext
 {
-    private readonly SemanticModel _semanticModel;
+    private readonly SemanticPackage _semanticPackage;
+    private readonly List<RequiredHeader> _headerDatabase;
 
-    public TypeContext(SemanticModel semanticModel)
+    public TypeContext(SemanticPackage semanticPackage, List<RequiredHeader> headerDatabase)
     {
-        _semanticModel = semanticModel;
+        _semanticPackage = semanticPackage;
+        _headerDatabase = headerDatabase;
     }
 
     public string ToCppType(TypeSyntax type)
     {
-        return ToCppType((ITypeSymbol)_semanticModel.GetSymbolInfo(type).Symbol!);
+        return ToCppType((ITypeSymbol)_semanticPackage.SemanticModel.GetSymbolInfo(type).Symbol!);
     }
 
-    private static string ToCppType(ITypeSymbol typeSymbol)
+    private string ToCppType(ITypeSymbol typeSymbol)
     {
+        if (_semanticPackage.PreExportedClasses.FirstOrDefault(@class =>
+                typeSymbol.ToString() == $"{@class.Namespace}.{@class.Name}") is { } referencedClass)
+        {
+            var requiredHeader = new RequiredHeader(false, referencedClass.HeaderName);
+            if (!_headerDatabase.Contains(requiredHeader))
+            {
+                _headerDatabase.Add(requiredHeader);
+            }
+            return referencedClass.Name;
+        }
+        
         switch (typeSymbol)
         {
             case IArrayTypeSymbol arrayTypeSymbol:

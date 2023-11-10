@@ -8,19 +8,44 @@ public class SyntaxTreeProcessor
     private const string TargetAttribute = "tdotnetbridge.ClientLibrary.QObjectAttribute.QObjectAttribute()";
     private const string TargetAttributeConstructor = "tdotnetbridge.ClientLibrary.ExportToQtAttribute.ExportToQtAttribute()";
     private readonly SyntaxTree _tree;
-    private readonly SemanticModel _semanticModel;
+    public SemanticModel SemanticModel { get; }
+
+    private async Task<IEnumerable<ClassDeclarationSyntax>> GetClasses() {
+        var root = await _tree.GetRootAsync();
+        return root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+    }
 
     public SyntaxTreeProcessor(SyntaxTree tree, SemanticModel semanticModel)
     {
         _tree = tree;
-        _semanticModel = semanticModel;
+        SemanticModel = semanticModel;
+    }
+
+    public async Task<IEnumerable<PreExportedClass>> PreProcess()
+    {
+        var classes = await GetClasses();
+        return classes.Select(PreProcessClass).Where(x => x is not null)!;
     }
 
     public async Task<IEnumerable<ExportedClass>> Process()
     {
-        var root = await _tree.GetRootAsync();
-        var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+        var classes = await GetClasses();
         return classes.Select(ProcessClass).Where(x => x is not null)!;
+    }
+
+    private PreExportedClass? PreProcessClass(MemberDeclarationSyntax @class)
+    {
+        if (!HasQObjectAttribute(@class))
+        {
+            return null;
+        }
+        
+        var classSymbol = SemanticModel.GetDeclaredSymbol(@class)!;
+        return new()
+        {
+            Namespace = classSymbol.ContainingNamespace.ToString()!,
+            Name = classSymbol.Name,
+        };
     }
 
     private ExportedClass? ProcessClass(MemberDeclarationSyntax @class)
@@ -37,7 +62,7 @@ public class SyntaxTreeProcessor
         foreach (var methodOrConstructor in methodAndConstructorDeclarations)
         {
             var attributesConstructorOrMethod = methodOrConstructor.AttributeLists.SelectMany(a => a.Attributes).ToList();
-            if (!attributesConstructorOrMethod.Select(attrC => _semanticModel.GetSymbolInfo(attrC)).Any(
+            if (!attributesConstructorOrMethod.Select(attrC => SemanticModel.GetSymbolInfo(attrC)).Any(
                     attrCSymbolInfo => attrCSymbolInfo.Symbol != null &&
                                        attrCSymbolInfo.Symbol.ToString() == TargetAttributeConstructor))
             {
@@ -60,7 +85,7 @@ public class SyntaxTreeProcessor
         foreach (var property in propertyDeclarations)
         {
             var attributesProperty = property.AttributeLists.SelectMany(a => a.Attributes).ToList();
-            if (!attributesProperty.Select(attrP => _semanticModel.GetSymbolInfo(attrP)).Any(
+            if (!attributesProperty.Select(attrP => SemanticModel.GetSymbolInfo(attrP)).Any(
                     attrPSymbolInfo => attrPSymbolInfo.Symbol is not null &&
                                        attrPSymbolInfo.Symbol.ToString() == TargetAttributeConstructor))
             {
@@ -70,7 +95,7 @@ public class SyntaxTreeProcessor
             properties.Add(property);
         }
 
-        var classSymbol = _semanticModel.GetDeclaredSymbol(@class)!;
+        var classSymbol = SemanticModel.GetDeclaredSymbol(@class)!;
 
         var exported = new ExportedClass
         {
@@ -87,7 +112,7 @@ public class SyntaxTreeProcessor
     private bool HasQObjectAttribute(MemberDeclarationSyntax @class)
     {
         var attributes = @class.AttributeLists.SelectMany(a => a.Attributes).ToList();
-        return attributes.Select(attr => _semanticModel.GetSymbolInfo(attr))
+        return attributes.Select(attr => SemanticModel.GetSymbolInfo(attr))
             .Any(attrSymbolInfo =>
                 attrSymbolInfo.Symbol != null && attrSymbolInfo.Symbol.ToString() == TargetAttribute);
     }
