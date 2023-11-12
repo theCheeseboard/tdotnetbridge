@@ -31,6 +31,7 @@ public class ExportedClass : PreExportedClass
             Methods.Select(syntax => GenerateMethodPrivateMember(syntax, semanticPackage, headerDatabase)));
         var propertyPrivates = string.Join('\n',
             Properties.Select(syntax => GeneratePropertyPrivateMember(syntax, semanticPackage, headerDatabase)));
+        var @namespace = Namespace.Replace(".", "::");
         
         return $$"""
                /// AUTO-GENERATED
@@ -41,6 +42,8 @@ public class ExportedClass : PreExportedClass
                #define {{IncludeGuard}}
                
                {{string.Join('\n', headerDatabase.Select(x => x.OutputCode()))}}
+               
+               namespace tdotnet::{{@namespace}} {
                
                class {{Name}} : public QObject, public QDotNetObject {
                    Q_OBJECT
@@ -61,6 +64,8 @@ public class ExportedClass : PreExportedClass
                {{methodPrivates}}
                {{propertyPrivates}}
                };
+               
+               } // namespace tdotnet::{{@namespace}}
                
                #endif // {{IncludeGuard}}
                """;
