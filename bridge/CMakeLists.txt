@@ -56,7 +56,7 @@ ELSE()
     set(LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
 ENDIF()
 
-tdotnet_add_dotnet_project(tdotnetbridge-adapter NO_GENERATE
+tdotnet_add_dotnet_project(tdotnetbridge-adapter NO_GENERATE SELF_CONTAINED
     PROJECT tdotnetbridge/tdotnetbridge.Adapter/tdotnetbridge.Adapter.csproj)
 
 tdotnet_add_dotnet_project(tdotnetbridge-generator NO_GENERATE
@@ -81,7 +81,12 @@ install(TARGETS tdotnetbridge
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+set(tdotnetbridge_generator_path "tdotnetbridge/tdotnetbridge-generator/tdotnetbridge.Generator")
+if(APPLE)
+    set(tdotnetbridge_generator_path "tdotnetbridge/tdotnetbridge-generator.framework/Contents/MacOS/tdotnetbridge.Generator")
+endif()
+
 install(CODE "
     message(\"-- Linking tdotnetbridge-generator\")
-    file(CREATE_LINK \"${CMAKE_INSTALL_FULL_LIBDIR}/tdotnetbridge/tdotnetbridge-generator/tdotnetbridge.Generator\" \"\$ENV{DESTDIR}${CMAKE_INSTALL_FULL_BINDIR}/tdotnetbridge-generator\" SYMBOLIC)
+    file(CREATE_LINK \"${CMAKE_INSTALL_FULL_LIBDIR}/${tdotnetbridge_generator_path}\" \"\$ENV{DESTDIR}${CMAKE_INSTALL_FULL_BINDIR}/tdotnetbridge-generator\" SYMBOLIC)
 ")

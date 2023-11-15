@@ -31,7 +31,7 @@ set_target_properties(tdotnetbridge-test PROPERTIES
     AUTOMOC TRUE
     CXX_STANDARD 20
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
+#        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
         MACOSX_BUNDLE_GUI_IDENTIFIER com.vicr123.tdotnetbridge-test
         WIN32_EXECUTABLE TRUE
         CNTP_DATA_SUBDIR tdotnetbridge-test

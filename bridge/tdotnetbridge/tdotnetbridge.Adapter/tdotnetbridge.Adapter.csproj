@@ -12,6 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release;Tests</Configurations>
+        <RuntimeIdentifiers>osx-x64;osx-arm64;linux-x64</RuntimeIdentifiers>
     </PropertyGroup>
     
 </Project>

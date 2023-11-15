@@ -37,7 +37,7 @@ endfunction()
 
 function(tdotnet_add_dotnet_project name)
     set(options NO_GENERATE NO_INSTALL)  # Boolean arguments
-    set(oneValueArgs PROJECT)   # Single value arguments
+    set(oneValueArgs PROJECT SELF_CONTAINED)   # Single value arguments
     set(multiValueArgs ) # Multi value arguments
 
     cmake_parse_arguments(ADD_DOTNET_PROJECT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -54,14 +54,39 @@ function(tdotnet_add_dotnet_project name)
         COMMENT "Restoring dependencies for MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
     )
 
-    add_custom_target(
-        ${name}_dotnet_build ALL
-        COMMAND ${DOTNET_PATH} publish -c Release ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} --output ${CMAKE_CURRENT_BINARY_DIR}/tdotnet/${name} --no-restore
-        COMMENT "Building MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
-    )
+    set(output_binary_directory ${name})
+    set(publish_directory ${name})
+    set(publish_args -c Release)
+    set(runtimes)
+
+    if(ADD_DOTNET_PROJECT_SELF_CONTAINED)
+        # Make the result self contained
+        list(APPEND publish_args --self-contained)
+    endif()
+
+    if(APPLE)
+        # Create a bundle
+        set(output_binary_directory ${name}.framework/Contents/MacOS)
+        set(publish_directory ${name}.framework)
+
+        # Set the runtimes
+        list(APPEND runtimes osx-x64 osx-arm64)
+    endif()
+
+
+    add_custom_target(${name}_dotnet_build ALL)
+    foreach(runtime IN LISTS runtimes)
+        add_custom_target(
+            ${name}_dotnet_build_${runtime}
+            COMMAND ${DOTNET_PATH} publish ${publish_args} -r ${runtime} ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} --output ${CMAKE_CURRENT_BINARY_DIR}/tdotnet/${output_binary_directory}/${runtime} --no-restore
+            COMMENT "Building MSBuild project ${ADD_DOTNET_PROJECT_PROJECT}..."
+        )
+        add_dependencies(${name}_dotnet_build ${name}_dotnet_build_${runtime})
+        add_dependencies(${name}_dotnet_build_${runtime} ${name}_dotnet_restore)
+    endforeach()
 
     if(NOT ADD_DOTNET_PROJECT_NO_INSTALL)
-        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tdotnet/${name}
+        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tdotnet/${publish_directory}
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/tdotnetbridge
             USE_SOURCE_PERMISSIONS
         )
