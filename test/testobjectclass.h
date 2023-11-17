@@ -6,68 +6,73 @@
 #define DOTNET_MANAGED_GENERATED_CLASS_CLASSLIBRARY2_TESTOBJECTCLASS
 
 #include <QObject>
-#include <include/qdotnetobject.h>
-#include <include/qdotnettask.h>
+#include <qdotnetarray.h>
+#include <qdotnetobject.h>
+#include <qdotnettask.h>
 
-class TestObjectClass : public QObject,
-                        public QDotNetObject {
-        Q_OBJECT
-        Q_PROPERTY(QString normalProperty READ normalProperty WRITE setNormalProperty)
-        Q_PROPERTY(QString computedProperty READ computedProperty)
-        Q_PROPERTY(QString customProperty READ customProperty WRITE setCustomProperty)
-        Q_PROPERTY(QString setOnlyProperty WRITE setSetOnlyProperty)
+namespace tdotnet::ClassLibrary2 {
 
-    public:
-        Q_DOTNET_OBJECT_INLINE(TestObjectClass, "ClassLibrary2.TestObjectClass");
+    class TestObjectClass : public QObject,
+                            public QDotNetObject {
+            Q_OBJECT
+            Q_PROPERTY(QString normalProperty READ normalProperty WRITE setNormalProperty)
+            Q_PROPERTY(QString computedProperty READ computedProperty)
+            Q_PROPERTY(QString customProperty READ customProperty WRITE setCustomProperty)
+            Q_PROPERTY(QString setOnlyProperty WRITE setSetOnlyProperty)
 
-        TestObjectClass() :
-            QDotNetObject(constructor<TestObjectClass>().invoke(nullptr)) {}
-        TestObjectClass(const QString& prefix) :
-            QDotNetObject(constructor<TestObjectClass, QString>().invoke(nullptr, prefix)) {}
+        public:
+            Q_DOTNET_OBJECT_INLINE(TestObjectClass, "ClassLibrary2.TestObjectClass");
 
-        void writeMessage(const QString& message) {
-            return method("WriteMessage", _fn_WriteMessage).invoke(*this, message);
-        }
-        int add(const int& addend, const int& addend2) {
-            return method("Add", _fn_Add).invoke(*this, addend, addend2);
-        }
-        QDotNetTask<QString> doSomethingAfterTwoSeconds() {
-            return method("DoSomethingAfterTwoSeconds", _fn_DoSomethingAfterTwoSeconds).invoke(*this);
-        }
-        QDotNetTask<void> justWait() {
-            return method("JustWait", _fn_JustWait).invoke(*this);
-        }
+            TestObjectClass() :
+                QDotNetObject(constructor<TestObjectClass>().invoke(nullptr)) {}
+            TestObjectClass(const QString& prefix) :
+                QDotNetObject(constructor<TestObjectClass, QString>().invoke(nullptr, prefix)) {}
 
-        QString normalProperty() {
-            return method("get_NormalProperty", _fn_property_getter_NormalProperty).invoke(*this);
-        }
-        void setNormalProperty(const QString& normalProperty) {
-            return method("set_NormalProperty", _fn_property_setter_NormalProperty).invoke(*this, normalProperty);
-        }
-        QString computedProperty() {
-            return method("get_ComputedProperty", _fn_property_getter_ComputedProperty).invoke(*this);
-        }
-        QString customProperty() {
-            return method("get_CustomProperty", _fn_property_getter_CustomProperty).invoke(*this);
-        }
-        void setCustomProperty(const QString& customProperty) {
-            return method("set_CustomProperty", _fn_property_setter_CustomProperty).invoke(*this, customProperty);
-        }
-        void setSetOnlyProperty(const QString& setOnlyProperty) {
-            return method("set_SetOnlyProperty", _fn_property_setter_SetOnlyProperty).invoke(*this, setOnlyProperty);
-        }
+            void writeMessage(const QString& message) {
+                return QDotNetObject::method("WriteMessage", _fn_WriteMessage).invoke(*this, message);
+            }
+            qint32 add(const qint32& addend, const qint32& addend2) {
+                return QDotNetObject::method("Add", _fn_Add).invoke(*this, addend, addend2);
+            }
+            QDotNetTask<QString> doSomethingAfterTwoSeconds() {
+                return QDotNetObject::method("DoSomethingAfterTwoSeconds", _fn_DoSomethingAfterTwoSeconds).invoke(*this);
+            }
+            QDotNetTask<void> justWait() {
+                return QDotNetObject::method("JustWait", _fn_JustWait).invoke(*this);
+            }
 
-    private:
-        QDotNetFunction<void, QString> _fn_WriteMessage;
-        QDotNetFunction<int, int, int> _fn_Add;
-        QDotNetFunction<QDotNetTask<QString>> _fn_DoSomethingAfterTwoSeconds;
-        QDotNetFunction<QDotNetTask<void>> _fn_JustWait;
-        QDotNetFunction<QString> _fn_property_getter_NormalProperty;
-        QDotNetFunction<void, QString> _fn_property_setter_NormalProperty;
-        QDotNetFunction<QString> _fn_property_getter_ComputedProperty;
-        QDotNetFunction<QString> _fn_property_getter_CustomProperty;
-        QDotNetFunction<void, QString> _fn_property_setter_CustomProperty;
-        QDotNetFunction<void, QString> _fn_property_setter_SetOnlyProperty;
-};
+            QString normalProperty() {
+                return method("get_NormalProperty", _fn_property_getter_NormalProperty).invoke(*this);
+            }
+            void setNormalProperty(const QString& normalProperty) {
+                return method("set_NormalProperty", _fn_property_setter_NormalProperty).invoke(*this, normalProperty);
+            }
+            QString computedProperty() {
+                return method("get_ComputedProperty", _fn_property_getter_ComputedProperty).invoke(*this);
+            }
+            QString customProperty() {
+                return method("get_CustomProperty", _fn_property_getter_CustomProperty).invoke(*this);
+            }
+            void setCustomProperty(const QString& customProperty) {
+                return method("set_CustomProperty", _fn_property_setter_CustomProperty).invoke(*this, customProperty);
+            }
+            void setSetOnlyProperty(const QString& setOnlyProperty) {
+                return method("set_SetOnlyProperty", _fn_property_setter_SetOnlyProperty).invoke(*this, setOnlyProperty);
+            }
+
+        private:
+            QDotNetFunction<void, QString> _fn_WriteMessage;
+            QDotNetFunction<qint32, qint32, qint32> _fn_Add;
+            QDotNetFunction<QDotNetTask<QString>> _fn_DoSomethingAfterTwoSeconds;
+            QDotNetFunction<QDotNetTask<void>> _fn_JustWait;
+            QDotNetFunction<QString> _fn_property_getter_NormalProperty;
+            QDotNetFunction<void, QString> _fn_property_setter_NormalProperty;
+            QDotNetFunction<QString> _fn_property_getter_ComputedProperty;
+            QDotNetFunction<QString> _fn_property_getter_CustomProperty;
+            QDotNetFunction<void, QString> _fn_property_setter_CustomProperty;
+            QDotNetFunction<void, QString> _fn_property_setter_SetOnlyProperty;
+    };
+
+} // namespace tdotnet::ClassLibrary2
 
 #endif // DOTNET_MANAGED_GENERATED_CLASS_CLASSLIBRARY2_TESTOBJECTCLASS

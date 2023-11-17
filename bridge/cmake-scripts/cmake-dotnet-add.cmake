@@ -128,6 +128,7 @@ function(tdotnet_add_dotnet_project name)
             LINKER_LANGUAGE CXX
             CXX_STANDARD 20
             AUTOMOC ON
+            POSITION_INDEPENDENT_CODE ON
         )
         target_link_libraries(${name}_dotnet_generate PUBLIC Qt::Core tdotnetbridge)
         target_include_directories(${name} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include)

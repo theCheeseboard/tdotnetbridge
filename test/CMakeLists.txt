@@ -39,7 +39,7 @@ set_target_properties(tdotnetbridge-test PROPERTIES
     )
 
 target_link_libraries(tdotnetbridge-test tdotnetbridge QCoro::Core)
-target_include_directories(tdotnetbridge-test PUBLIC ../bridge/)
+target_include_directories(tdotnetbridge-test PUBLIC ../bridge/include)
 
 install(TARGETS tdotnetbridge-test
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

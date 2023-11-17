@@ -5,7 +5,9 @@
 #include <QString>
 #include <QTextStream>
 #include <functional>
-#include <include/qdotnetevent.h>
+#include <qdotnetevent.h>
+
+using namespace tdotnet::ClassLibrary2;
 
 QCoro::Task<> runTask() {
     TestObjectClass testDotNetClass;
