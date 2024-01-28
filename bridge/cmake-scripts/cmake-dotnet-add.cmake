@@ -71,6 +71,11 @@ function(tdotnet_add_dotnet_project name)
 
         # Set the runtimes
         list(APPEND runtimes osx-x64 osx-arm64)
+    elseif (UNIX)
+        # TODO: arm support
+        if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+            list(APPEND runtimes linux-x64)
+        endif()
     endif()
 
 
@@ -105,6 +110,7 @@ function(tdotnet_add_dotnet_project name)
         execute_process(
             COMMAND ${GENERATOR_PATH} -n ${CMAKE_CURRENT_SOURCE_DIR}/${ADD_DOTNET_PROJECT_PROJECT} ${CMAKE_CURRENT_BINARY_DIR}/tdotnet-include/${name}
             OUTPUT_VARIABLE GENERATOR_DRY_RUN_OUTPUT
+            COMMAND_ERROR_IS_FATAL ANY
         )
 
         # Replace newline with semicolon

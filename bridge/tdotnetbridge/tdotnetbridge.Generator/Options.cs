@@ -10,7 +10,7 @@ public class Options
     [Value(1, MetaName = "output", HelpText = "Directory to place generated include files", Default = "-")]
     public string Output { get; set; } = string.Empty;
 
-    [Option('f', "framework", Default = "net7.0", HelpText = "Target Framework")]
+    [Option('f', "framework", Default = "net8.0", HelpText = "Target Framework")]
     public string Framework { get; set; } = string.Empty;
 
     [Option('n', "dry-run")]

@@ -81,7 +81,7 @@ install(TARGETS tdotnetbridge
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-set(tdotnetbridge_generator_path "tdotnetbridge/tdotnetbridge-generator/tdotnetbridge.Generator")
+set(tdotnetbridge_generator_path "tdotnetbridge/tdotnetbridge-generator/linux-x64/tdotnetbridge.Generator")
 if(APPLE)
     set(tdotnetbridge_generator_path "tdotnetbridge/tdotnetbridge-generator.framework/Contents/MacOS/tdotnetbridge.Generator")
 endif()
